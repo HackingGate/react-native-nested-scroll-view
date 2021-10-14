@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,19 +7,18 @@
 
 package com.rnnestedscrollview;
 
-import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.core.widget.NestedScrollView;
 import androidx.core.view.ViewCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
+import android.widget.ScrollView;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
@@ -34,21 +33,19 @@ import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Forked from https://github.com/facebook/react-native/blob/0.57-stable/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.java
- *
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
  * a scroll listener to send scroll events to JS.
  *
- * <p>ReactNestedScrollView only supports vertical scrolling. For horizontal scrolling,
+ * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-@TargetApi(11)
-public class ReactNestedScrollView extends NestedScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
+public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -79,11 +76,11 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
   private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  public ReactNestedScrollView(ReactContext context) {
+  public ReactScrollView(ReactContext context) {
     this(context, null);
   }
 
-  public ReactNestedScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
+  public ReactScrollView(ReactContext context, @Nullable FpsListener fpsListener) {
     super(context);
     mFpsListener = fpsListener;
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
@@ -100,7 +97,7 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
     if (!sTriedToGetScrollerField) {
       sTriedToGetScrollerField = true;
       try {
-        sScrollerField = NestedScrollView.class.getDeclaredField("mScroller");
+        sScrollerField = ScrollView.class.getDeclaredField("mScroller");
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
         Log.w(
@@ -167,6 +164,7 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
   public void setSnapToStart(boolean snapToStart) {
     mSnapToStart = snapToStart;
   }
+
   public void setSnapToEnd(boolean snapToEnd) {
     mSnapToEnd = snapToEnd;
   }
@@ -203,14 +201,13 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
     }
   }
 
-//  Not Working with NestedScrollView
-//  @Override
-//  protected void onAttachedToWindow() {
-//    super.onAttachedToWindow();
-//    if (mRemoveClippedSubviews) {
-//      updateClippingRect();
-//    }
-//  }
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+  }
 
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
@@ -355,9 +352,6 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
 
       ViewCompat.postInvalidateOnAnimation(this);
 
-      // RNNestedScrollView CHANGE (Should we use correctedVelocityY here as well?)
-      // Fixed fling issue on support library 26 (see issue https://github.com/cesardeazevedo/react-native-nested-scroll-view/issues/16)
-      super.fling(velocityY);
       // END FB SCROLLVIEW CHANGE
     } else {
       super.fling(correctedVelocityY);
@@ -446,7 +440,7 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
         if (mActivelyScrolling) {
           // We are still scrolling so we just post to check again a frame later
           mActivelyScrolling = false;
-          ViewCompat.postOnAnimationDelayed(ReactNestedScrollView.this,
+          ViewCompat.postOnAnimationDelayed(ReactScrollView.this,
             this,
             ReactScrollViewHelper.MOMENTUM_DELAY);
         } else {
@@ -455,20 +449,20 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
             flingAndSnap(0);
-            ViewCompat.postOnAnimationDelayed(ReactNestedScrollView.this,
+            ViewCompat.postOnAnimationDelayed(ReactScrollView.this,
               this,
               ReactScrollViewHelper.MOMENTUM_DELAY);
           } else {
             if (mSendMomentumEvents) {
-              ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactNestedScrollView.this);
+              ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
             }
-            ReactNestedScrollView.this.mPostTouchRunnable = null;
+            ReactScrollView.this.mPostTouchRunnable = null;
             disableFpsListener();
           }
         }
       }
     };
-    ViewCompat.postOnAnimationDelayed(ReactNestedScrollView.this,
+    ViewCompat.postOnAnimationDelayed(ReactScrollView.this,
       mPostTouchRunnable,
       ReactScrollViewHelper.MOMENTUM_DELAY);
   }
@@ -568,6 +562,9 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
+      firstOffset = mSnapOffsets.get(0);
+      lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
+
       for (int i = 0; i < mSnapOffsets.size(); i ++) {
         int offset = mSnapOffsets.get(i);
 
@@ -614,10 +611,12 @@ public class ReactNestedScrollView extends NestedScrollView implements ReactClip
     } else if (velocityY > 0) {
       // when snapping velocity can feel sluggish for slow swipes
       velocityY += (int) ((largerOffset - targetOffset) * 10.0);
+
       targetOffset = largerOffset;
     } else if (velocityY < 0) {
       // when snapping velocity can feel sluggish for slow swipes
       velocityY -= (int) ((targetOffset - smallerOffset) * 10.0);
+
       targetOffset = smallerOffset;
     } else {
       targetOffset = nearestOffset;

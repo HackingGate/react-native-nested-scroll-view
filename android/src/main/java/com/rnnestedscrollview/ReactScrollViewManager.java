@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 package com.rnnestedscrollview;
 
-import android.annotation.TargetApi;
 import android.graphics.Color;
 import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
@@ -36,19 +35,17 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Forked from https://github.com/facebook/react-native/blob/0.57-stable/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.java
+ * View manager for {@link ReactScrollView} components.
  *
- * View manager for {@link ReactNestedScrollView} components.
- *
- * <p>Note that {@link ReactNestedScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
+ * <p>Note that {@link ReactScrollView} and {@link ReactScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
-@ReactModule(name = ReactNestedScrollViewManager.REACT_CLASS)
-public class ReactNestedScrollViewManager
-    extends ViewGroupManager<ReactNestedScrollView>
-    implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactNestedScrollView> {
+@ReactModule(name = ReactScrollViewManager.REACT_CLASS)
+public class ReactScrollViewManager
+    extends ViewGroupManager<ReactScrollView>
+    implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  protected static final String REACT_CLASS = "RCTNestedScrollView";
+  public static final String REACT_CLASS = "RCTParentScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -56,11 +53,11 @@ public class ReactNestedScrollViewManager
 
   private @Nullable FpsListener mFpsListener = null;
 
-  public ReactNestedScrollViewManager() {
+  public ReactScrollViewManager() {
     this(null);
   }
 
-  public ReactNestedScrollViewManager(@Nullable FpsListener fpsListener) {
+  public ReactScrollViewManager(@Nullable FpsListener fpsListener) {
     mFpsListener = fpsListener;
   }
 
@@ -70,32 +67,34 @@ public class ReactNestedScrollViewManager
   }
 
   @Override
-  public ReactNestedScrollView createViewInstance(ThemedReactContext context) {
-    return new ReactNestedScrollView(context, mFpsListener);
+  public ReactScrollView createViewInstance(ThemedReactContext context) {
+    return new ReactScrollView(context, mFpsListener);
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
-  public void setScrollEnabled(ReactNestedScrollView view, boolean value) {
+  public void setScrollEnabled(ReactScrollView view, boolean value) {
     view.setScrollEnabled(value);
   }
 
   @ReactProp(name = "showsVerticalScrollIndicator")
-  public void setShowsVerticalScrollIndicator(ReactNestedScrollView view, boolean value) {
+  public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
     view.setVerticalScrollBarEnabled(value);
   }
 
   @ReactProp(name = "decelerationRate")
-  public void setDecelerationRate(ReactNestedScrollView view, float decelerationRate) {
+  public void setDecelerationRate(ReactScrollView view, float decelerationRate) {
     view.setDecelerationRate(decelerationRate);
   }
+
   @ReactProp(name = "snapToInterval")
-  public void setSnapToInterval(ReactNestedScrollView view, float snapToInterval) {
+  public void setSnapToInterval(ReactScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     view.setSnapInterval((int) (snapToInterval * screenDisplayMetrics.density));
   }
+
   @ReactProp(name = "snapToOffsets")
-  public void setSnapToOffsets(ReactNestedScrollView view, @Nullable ReadableArray snapToOffsets) {
+  public void setSnapToOffsets(ReactScrollView view, @Nullable ReadableArray snapToOffsets) {
     DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     List<Integer> offsets = new ArrayList<Integer>();
     for (int i = 0; i < snapToOffsets.size(); i++) {
@@ -105,16 +104,17 @@ public class ReactNestedScrollViewManager
   }
 
   @ReactProp(name = "snapToStart")
-  public void setSnapToStart(ReactNestedScrollView view, boolean snapToStart) {
+  public void setSnapToStart(ReactScrollView view, boolean snapToStart) {
     view.setSnapToStart(snapToStart);
   }
+
   @ReactProp(name = "snapToEnd")
-  public void setSnapToEnd(ReactNestedScrollView view, boolean snapToEnd) {
+  public void setSnapToEnd(ReactScrollView view, boolean snapToEnd) {
     view.setSnapToEnd(snapToEnd);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
-  public void setRemoveClippedSubviews(ReactNestedScrollView view, boolean removeClippedSubviews) {
+  public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
@@ -127,7 +127,7 @@ public class ReactNestedScrollViewManager
    * @param sendMomentumEvents
    */
   @ReactProp(name = "sendMomentumEvents")
-  public void setSendMomentumEvents(ReactNestedScrollView view, boolean sendMomentumEvents) {
+  public void setSendMomentumEvents(ReactScrollView view, boolean sendMomentumEvents) {
     view.setSendMomentumEvents(sendMomentumEvents);
   }
 
@@ -139,12 +139,12 @@ public class ReactNestedScrollViewManager
    * @param scrollPerfTag
    */
   @ReactProp(name = "scrollPerfTag")
-  public void setScrollPerfTag(ReactNestedScrollView view, @Nullable String scrollPerfTag) {
+  public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
   }
 
   @ReactProp(name = "pagingEnabled")
-  public void setPagingEnabled(ReactNestedScrollView view, boolean pagingEnabled) {
+  public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);
   }
 
@@ -155,7 +155,7 @@ public class ReactNestedScrollViewManager
    * @param color
    */
   @ReactProp(name = "endFillColor", defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setBottomFillColor(ReactNestedScrollView view, int color) {
+  public void setBottomFillColor(ReactScrollView view, int color) {
     view.setEndFillColor(color);
   }
 
@@ -163,12 +163,12 @@ public class ReactNestedScrollViewManager
    * Controls overScroll behaviour
    */
   @ReactProp(name = "overScrollMode")
-  public void setOverScrollMode(ReactNestedScrollView view, String value) {
+  public void setOverScrollMode(ReactScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
   @ReactProp(name = "nestedScrollEnabled")
-  public void setNestedScrollEnabled(ReactNestedScrollView view, boolean value) {
+  public void setNestedScrollEnabled(ReactScrollView view, boolean value) {
     ViewCompat.setNestedScrollingEnabled(view, value);
   }
 
@@ -179,20 +179,20 @@ public class ReactNestedScrollViewManager
 
   @Override
   public void receiveCommand(
-      ReactNestedScrollView scrollView,
+      ReactScrollView scrollView,
       int commandId,
       @Nullable ReadableArray args) {
     ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
   }
 
   @Override
-  public void flashScrollIndicators(ReactNestedScrollView scrollView) {
+  public void flashScrollIndicators(ReactScrollView scrollView) {
     scrollView.flashScrollIndicators();
   }
 
   @Override
   public void scrollTo(
-      ReactNestedScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
+      ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated) {
       scrollView.smoothScrollTo(data.mDestX, data.mDestY);
     } else {
@@ -206,7 +206,7 @@ public class ReactNestedScrollViewManager
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
       ViewProps.BORDER_BOTTOM_LEFT_RADIUS
   }, defaultFloat = YogaConstants.UNDEFINED)
-  public void setBorderRadius(ReactNestedScrollView view, int index, float borderRadius) {
+  public void setBorderRadius(ReactScrollView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
     }
@@ -219,7 +219,7 @@ public class ReactNestedScrollViewManager
   }
 
   @ReactProp(name = "borderStyle")
-  public void setBorderStyle(ReactNestedScrollView view, @Nullable String borderStyle) {
+  public void setBorderStyle(ReactScrollView view, @Nullable String borderStyle) {
     view.setBorderStyle(borderStyle);
   }
 
@@ -230,7 +230,7 @@ public class ReactNestedScrollViewManager
       ViewProps.BORDER_TOP_WIDTH,
       ViewProps.BORDER_BOTTOM_WIDTH,
   }, defaultFloat = YogaConstants.UNDEFINED)
-  public void setBorderWidth(ReactNestedScrollView view, int index, float width) {
+  public void setBorderWidth(ReactScrollView view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
     }
@@ -240,7 +240,7 @@ public class ReactNestedScrollViewManager
   @ReactPropGroup(names = {
       "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
   }, customType = "Color")
-  public void setBorderColor(ReactNestedScrollView view, int index, Integer color) {
+  public void setBorderColor(ReactScrollView view, int index, Integer color) {
     float rgbComponent =
         color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
@@ -248,13 +248,13 @@ public class ReactNestedScrollViewManager
   }
 
   @ReactProp(name = "overflow")
-  public void setOverflow(ReactNestedScrollView view, @Nullable String overflow) {
+  public void setOverflow(ReactScrollView view, @Nullable String overflow) {
     view.setOverflow(overflow);
   }
 
   @Override
   public void scrollToEnd(
-      ReactNestedScrollView scrollView,
+      ReactScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
     // ScrollView always has one child - the scrollable area
     int bottom =
@@ -267,7 +267,7 @@ public class ReactNestedScrollViewManager
   }
 
   @ReactProp(name = "persistentScrollbar")
-  public void setPersistentScrollbar(ReactNestedScrollView view, boolean value) {
+  public void setPersistentScrollbar(ReactScrollView view, boolean value) {
     view.setScrollbarFadingEnabled(!value);
   }
 

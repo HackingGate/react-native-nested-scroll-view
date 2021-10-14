@@ -11,9 +11,9 @@ import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
  * This class only exists to replace the native view name (REACT_CLASS) and extends the default
  * behavior of the ReactHorizontalScrollViewManager.
  */
-public class ReactHorizontalNestedScrollViewManager extends ReactHorizontalScrollViewManager {
+public class ReactHorizontalParentScrollViewManager extends ReactHorizontalScrollViewManager {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalNestedScrollView";
+  protected static final String REACT_CLASS = "AndroidHorizontalParentScrollView";
 
   @Override
   public String getName() {

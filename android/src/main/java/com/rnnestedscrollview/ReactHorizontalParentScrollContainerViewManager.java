@@ -2,10 +2,10 @@ package com.rnnestedscrollview;
 
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 
-public class ReactHorizontalNestedScrollContainerViewManager
+public class ReactHorizontalParentScrollContainerViewManager
     extends ReactHorizontalScrollContainerViewManager {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalNestedScrollContentView";
+  protected static final String REACT_CLASS = "AndroidHorizontalParentScrollContentView";
 
   @Override
   public String getName() {
