@@ -50,7 +50,7 @@ import java.util.List;
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling, use {@link
  * ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView
+public class ReactScrollView extends IOSLikeScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener {
