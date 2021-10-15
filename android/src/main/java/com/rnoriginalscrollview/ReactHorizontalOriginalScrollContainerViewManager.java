@@ -1,11 +1,11 @@
-package com.rnnestedscrollview;
+package com.rnoriginalscrollview;
 
 import com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager;
 
-public class ReactHorizontalParentScrollContainerViewManager
+public class ReactHorizontalOriginalScrollContainerViewManager
     extends ReactHorizontalScrollContainerViewManager {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalParentScrollContentView";
+  protected static final String REACT_CLASS = "AndroidHorizontalOriginalScrollContentView";
 
   @Override
   public String getName() {

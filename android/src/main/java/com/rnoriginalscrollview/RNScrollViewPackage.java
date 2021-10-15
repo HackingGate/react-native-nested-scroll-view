@@ -1,4 +1,4 @@
-package com.rnnestedscrollview;
+package com.rnoriginalscrollview;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +20,8 @@ public class RNScrollViewPackage implements ReactPackage {
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
       return Arrays.<ViewManager>asList(
           new ReactScrollViewManager(),
-          new ReactHorizontalParentScrollViewManager(),
-          new ReactHorizontalParentScrollContainerViewManager()
+          new ReactHorizontalOriginalScrollViewManager(),
+          new ReactHorizontalOriginalScrollContainerViewManager()
       );
     }
 }

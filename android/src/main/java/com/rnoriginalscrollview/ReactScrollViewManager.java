@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.rnnestedscrollview;
+package com.rnoriginalscrollview;
 
 import android.graphics.Color;
 import android.util.DisplayMetrics;
@@ -47,7 +47,7 @@ import java.util.Map;
 public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  public static final String REACT_CLASS = "RCTParentScrollView";
+  public static final String REACT_CLASS = "RCTOriginalScrollView";
 
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
